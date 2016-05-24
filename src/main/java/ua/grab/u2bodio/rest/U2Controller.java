@@ -17,6 +17,9 @@ public class U2Controller {
     @RequestMapping("/direct")
     public final ResponseEntity<String> directVideoUrl(@RequestParam("url")
         String url) {
+
+        service.extract(url);
+
         return new ResponseEntity<String>(
             "resp : " + this.service.directUrl(url), HttpStatus.OK);
     }
