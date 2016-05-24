@@ -44,12 +44,6 @@ public class OdioEx {
             .withOutput(output.toAbsolutePath().toString()).cmd();
     }
 
-
-    private boolean isSupportedFormat(String test) {
-        return test.endsWith("mp4") || test.endsWith("avi") ||
-            test.endsWith("flv");
-    }
-
     private class CmdBuilder {
         private final String exec = "ffmpeg";
         private final String[] inFlags = {"-i"};
@@ -58,7 +52,7 @@ public class OdioEx {
         private String input;
         private String output;
 
-        public String[] cmd() {
+        private String[] cmd() {
             List<String> args = new ArrayList<>();
             args.add(exec);
             Stream.of(inFlags).forEach(args::add);

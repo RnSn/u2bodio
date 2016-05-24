@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -127,22 +128,27 @@ public class U2Dl {
     }
 
     private String getStreamMap(String videoInfo) {
-        return getNamedParameter(videoInfo, "url_encoded_fmt_stream_map");
+        return paramVal(videoInfo, "url_encoded_fmt_stream_map");
     }
 
-    private String getNamedParameter(String videoInfo, String param) {
+    private String paramVal(String videoInfo, String param) {
         List<NameValuePair> pairs = URLEncodedUtils
             .parse(videoInfo, Charset.defaultCharset());
-        for (NameValuePair pair : pairs) {
-            if (pair.getName().equals(param)) {
-                return pair.getValue();
-            }
+        Optional<NameValuePair> result = pairs.stream()
+            .filter(pair -> pair.getName().equals(param)).findAny();
+        if (result.isPresent()) {
+            return result.get().getValue();
+        } else {
+            return "";
         }
-        return "";
     }
 
     private String getTitle(final String videoInfo) {
-        return getNamedParameter(videoInfo, "title");
+        String title = paramVal(videoInfo, "title");
+        for (final char c : Const.ILLEGAL_FILENAME_CHARACTERS) {
+            title = title.replace(c, '_');
+        }
+        return title;
     }
 
     private void downloadFile(String link, Path outFile) throws IOException {
@@ -264,39 +270,8 @@ public class U2Dl {
             "OPR/24.0.1558.61";
         private static final String DEFAULT_ENCODING = "UTF-8";
         private static final int BUFFER_CONST = 2048;
+        private static final char[] ILLEGAL_FILENAME_CHARACTERS = {'/', '\n',
+            '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"',
+            ':', ' ', '!'};
     }
 }
-
-/**
- * <pre>
- * Exploded results from get_video_info:
- *
- * fexp=909302
- * allow_embed=1
- * fmt_stream_map=35|http://v9.lscache8.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=35&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=9E0A8E67154145BCADEBCF844CC155282548288F.2BBD0B2E125E3E533D07866C7AE91B38DD625D30&factor=1.25&id=4ba2193f7c9127d2||tc.v9.cache8.c.youtube.com,34|http://v6.lscache3.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=34&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=6726793A7B041E6456B52C0972596D0D58974141.42B5A0573F62B85AEA7979E5EE1ADDD47EB9E909&factor=1.25&id=4ba2193f7c9127d2||tc.v6.cache3.c.youtube.com,18|http://v12.lscache7.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=18&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=AE58398D4CC4D760C682D2A5B670B4047777FFF0.952E4FC4554E786FD937E7A89140E1F79B6DD8B7&factor=1.25&id=4ba2193f7c9127d2||tc.v12.cache7.c.youtube.com,5|http://v1.lscache7.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=5&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=43434DCB6CFC463FF4522D9EE7CD019FE47237B1.C60A9522E361130938663AF2DAD83A5C2821AF5C&factor=1.25&id=4ba2193f7c9127d2||tc.v1.cache7.c.youtube.com
- * fmt_url_map=35|http://v9.lscache8.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=35&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=9E0A8E67154145BCADEBCF844CC155282548288F.2BBD0B2E125E3E533D07866C7AE91B38DD625D30&factor=1.25&id=4ba2193f7c9127d2,34|http://v6.lscache3.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=34&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=6726793A7B041E6456B52C0972596D0D58974141.42B5A0573F62B85AEA7979E5EE1ADDD47EB9E909&factor=1.25&id=4ba2193f7c9127d2,18|http://v12.lscache7.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=18&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=AE58398D4CC4D760C682D2A5B670B4047777FFF0.952E4FC4554E786FD937E7A89140E1F79B6DD8B7&factor=1.25&id=4ba2193f7c9127d2,5|http://v1.lscache7.c.youtube.com/videoplayback?ip=174.0.0.0&sparams=id%2Cexpire%2Cip%2Cipbits%2Citag%2Calgorithm%2Cburst%2Cfactor&fexp=909302&algorithm=throttle-factor&itag=5&ipbits=8&burst=40&sver=3&expire=1294549200&key=yt1&signature=43434DCB6CFC463FF4522D9EE7CD019FE47237B1.C60A9522E361130938663AF2DAD83A5C2821AF5C&factor=1.25&id=4ba2193f7c9127d2
- * allow_ratings=1
- * keywords=Stefan Molyneux,Luke Bessey,anarchy,stateless society,giant stone cow,the story of our unenslavement,market anarchy,voluntaryism,anarcho capitalism
- * track_embed=0
- * fmt_list=35/854x480/9/0/115,34/640x360/9/0/115,18/640x360/9/0/115,5/320x240/7/0/0
- * author=lukebessey
- * muted=0
- * length_seconds=390
- * plid=AASZXXGQtTEDKwAw
- * ftoken=null
- * status=ok
- * watermark=http://s.ytimg.com/yt/swf/logo-vfl_bP6ud.swf,http://s.ytimg.com/yt/swf/hdlogo-vfloR6wva.swf
- * timestamp=1294526523
- * has_cc=False
- * fmt_map=35/854x480/9/0/115,34/640x360/9/0/115,18/640x360/9/0/115,5/320x240/7/0/0
- * leanback_module=http://s.ytimg.com/yt/swfbin/leanback_module-vflJYyeZN.swf
- * hl=en_US
- * endscreen_module=http://s.ytimg.com/yt/swfbin/endscreen-vflk19iTq.swf
- * vq=auto
- * avg_rating=5.0
- * video_id=S6IZP3yRJ9I
- * token=vjVQa1PpcFNhI3jvw6hfEHivcKK-XY5gb-iszDMrooA=
- * thumbnail_url=http://i4.ytimg.com/vi/S6IZP3yRJ9I/default.jpg
- * title=The Story of Our Unenslavement - Animated
- * </pre>
- */
