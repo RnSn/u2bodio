@@ -12,8 +12,8 @@ public class U2dlTest {
     @Test
     public void testU2() throws IOException {
         String url = "https://www.youtube.com/watch?v=pjcXt4v0p2c";
-        U2Dl u2dl = new U2Dl(
-            url);
+        VideoInfo vi = new VideoInfo(url);
+        U2Dl u2dl = new U2Dl(vi);
 
         Path outputDir = Paths.get("./target").toAbsolutePath()
             .normalize();
