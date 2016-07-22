@@ -39,7 +39,7 @@ public class Video2Audio {
 
     private Path workDir() {
         Path workDir = Paths.get("working",
-            LocalDateTime.now().toString().replaceAll(":", "" + ".") + "_" +
+            LocalDateTime.now().toString().replaceAll(":", ".") + "_" +
                 UUID.randomUUID().toString());
         try {
             Files.createDirectories(workDir);

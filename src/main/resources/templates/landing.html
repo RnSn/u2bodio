@@ -5,16 +5,31 @@
     <title>Youtube video 2 audio converter</title>
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.css"/>
 </head>
-<body class="container">
-<div class="container-fluid">
-    <form class="navbar-form navbar-default" action="direct">
-        <p class="navbar-text">Paste Youtube video link</p>
-        <div class="form-group">
-            <input class="form-control" type="text" name="url"
-                   value="https://www.youtube.com/watch?v=RDWmfJazWls"/>
-            <input class="btn btn-submit" type="submit" id="submit"/>
+<body>
+
+<div class="container">
+    <div class="row vertical-center-row">
+        <div class="col-md-2">
         </div>
-    </form>
+
+        <div class="col-md-8">
+            <form class="form-inline" action="direct">
+                <div class="form-group">
+                    <label for="url" class="control-label">Paste
+                        Youtube video link</label>
+                        <input class="form-control" type="text" name="url"
+                               id="url"
+                               value="https://www.youtube.com/watch?v=RDWmfJazWls"/>
+                    <input class="btn btn-submit" type="submit" id="submit"/>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-2">
+        </div>
+    </div>
 </div>
+
+
 </body>
 </html>
